@@ -1,0 +1,28 @@
+{
+  "name": "@trainix/database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db:push": "npx prisma db push",
+    "db:generate:dev": "npx prisma generate",
+    "db:generate:test": "npx prisma generate",
+    "db:reset": "npx prisma db push --force-reset",
+    "db:seed": "npx prisma db seed",
+    "db:studio": "npx prisma studio --browser chrome"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.1",
+    "prisma": "^5.15.0",
+    "ts-node": "^10.9.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
+}

@@ -4,12 +4,12 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "start:api:test": "turbo start:api:test",
+    "test:api:e2e": "turbo test:api:e2e",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
     "prettier": "^3.2.5",
     "turbo": "latest"
   },

@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env.dev src/index.ts",
+    "start:api:dev": "tsx --env-file=.env.dev src/index.ts",
+    "start:api:test": "tsx --env-file=.env.test src/index.ts",
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@trainix/database": "*",
+    "@hono/node-server": "^1.11.2",
+    "hono": "^4.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1"
+  }
+}
