@@ -1,5 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { ApiRoutes } from "./modules/core/constants/api-routes";
+import { muscles } from "./modules/muscles/controller";
 
 const app = new Hono();
 
@@ -7,10 +9,11 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-const port = process.env.PORT ?? 3000;
-console.log(`Server is running on port ${port}`);
+app.route(ApiRoutes.MUSCLES, muscles);
 
-serve({
-  fetch: app.fetch,
-  port,
-});
+const port = process.env.PORT ?? 3000;
+const { fetch } = app;
+
+serve({ fetch, port });
+
+console.log(`Server is running on port ${port}`);

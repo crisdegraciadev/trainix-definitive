@@ -9,17 +9,18 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["^db:generate:dev", "^db:push:push"]
+      "dependsOn": ["^db:generate:dev", "^db:push:dev", "^db:seed:test"]
     },
     "start:api:test": {
       "cache": false,
-      "dependsOn": ["^db:generate:test", "^db:push:test"]
+      "dependsOn": ["^db:generate:test", "^db:push:test", "^db:seed:test"]
     },
     "test:api:e2e": {
       "cache": false
     },
     "test:api:e2e:watch": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "db:generate:dev": {
       "cache": false,
@@ -36,6 +37,14 @@
     "db:push:test": {
       "cache": false,
       "dependsOn": ["^db:push:test"]
+    },
+    "db:seed:dev": {
+      "cache": false,
+      "dependsOn": ["^db:seed:dev"]
+    },
+    "db:seed:test": {
+      "cache": false,
+      "dependsOn": ["^db:seed:test"]
     }
   }
 }

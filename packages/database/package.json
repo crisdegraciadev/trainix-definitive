@@ -1,15 +1,15 @@
 {
   "name": "@trainix/database",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "db:push:dev": "npm run cp:dev && npx prisma db push",
     "db:push:test": "npm run cp:test && npx prisma db push",
     "db:generate:dev": "npm run cp:dev && npx prisma generate",
     "db:generate:test": "npm run cp:test && npx prisma generate",
     "db:reset": "npx prisma db push --force-reset",
-    "db:seed": "npx prisma db seed",
+    "db:seed:dev": "npm run cp:dev && npx prisma db seed",
+    "db:seed:test": "npm run cp:test && npx prisma db seed",
     "db:studio": "npx prisma studio --browser chrome",
     "cp:dev": "cp .env.dev .env",
     "cp:test": "cp .env.test .env"

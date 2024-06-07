@@ -2,7 +2,6 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file=.env.dev src/index.ts",
     "start:api:dev": "tsx --env-file=.env.dev src/index.ts",
