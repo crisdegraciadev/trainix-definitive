@@ -1,5 +1,19 @@
 # Trainix
 
+## API Architecture
+
+The `api` package is following the REST Principles, implementing screaming architecture.
+
+### Controller naming
+
+| Verb   | Path          | Action  |     |     |
+| ------ | ------------- | ------- | --- | --- |
+| GET    | /resource     | list    |     |     |
+| GET    | /resource/:id | details |     |     |
+| POST   | /resource     | create  |     |     |
+| PUT    | /resource/:id | update  |     |     |
+| DELETE | /resource/:id | destroy |     |     |
+
 ## How to run API e2e tests
 
 To run API e2e tests you can follow this steps:

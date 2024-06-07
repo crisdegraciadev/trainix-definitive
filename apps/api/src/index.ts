@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { ApiRoutes } from "./modules/core/constants/api-routes";
-import { muscles } from "./modules/muscles/controller";
+import { musclesApp } from "./modules/muscles/routes";
 
 const app = new Hono();
 
@@ -9,7 +9,7 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.route(ApiRoutes.MUSCLES, muscles);
+app.route(ApiRoutes.MUSCLES, musclesApp);
 
 const port = process.env.PORT ?? 3000;
 const { fetch } = app;
