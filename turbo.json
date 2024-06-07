@@ -8,13 +8,17 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^db:generate:dev", "^db:push:push"]
     },
     "start:api:test": {
-      "dependsOn": ["^db:generate:dev"],
-      "cache": false
+      "cache": false,
+      "dependsOn": ["^db:generate:test", "^db:push:test"]
     },
     "test:api:e2e": {
+      "cache": false
+    },
+    "test:api:e2e:watch": {
       "cache": false
     },
     "db:generate:dev": {
@@ -24,6 +28,14 @@
     "db:generate:test": {
       "cache": false,
       "dependsOn": ["^db:generate:test"]
+    },
+    "db:push:dev": {
+      "cache": false,
+      "dependsOn": ["^db:push:dev"]
+    },
+    "db:push:test": {
+      "cache": false,
+      "dependsOn": ["^db:push:test"]
     }
   }
 }

@@ -6,6 +6,7 @@
     "dev": "turbo dev",
     "start:api:test": "turbo start:api:test",
     "test:api:e2e": "turbo test:api:e2e",
+    "test:api:e2e:watch": "turbo test:api:e2e:watch",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

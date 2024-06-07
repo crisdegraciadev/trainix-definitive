@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "db:push": "npx prisma db push",
-    "db:generate:dev": "npx prisma generate",
-    "db:generate:test": "npx prisma generate",
+    "db:push:dev": "npm run cp:dev && npx prisma db push",
+    "db:push:test": "npm run cp:test && npx prisma db push",
+    "db:generate:dev": "npm run cp:dev && npx prisma generate",
+    "db:generate:test": "npm run cp:test && npx prisma generate",
     "db:reset": "npx prisma db push --force-reset",
     "db:seed": "npx prisma db seed",
-    "db:studio": "npx prisma studio --browser chrome"
+    "db:studio": "npx prisma studio --browser chrome",
+    "cp:dev": "cp .env.dev .env",
+    "cp:test": "cp .env.test .env"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0"
