@@ -5,6 +5,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "start:api:test": "turbo start:api:test",
+    "start:api:test:watch": "turbo start:api:test:watch",
     "test:api:e2e": "turbo test:api:e2e",
     "test:api:e2e:watch": "turbo test:api:e2e:watch",
     "lint": "turbo lint",
@@ -12,7 +13,7 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5",
-    "turbo": "latest"
+    "turbo": "^2.0.4"
   },
   "engines": {
     "node": ">=18"

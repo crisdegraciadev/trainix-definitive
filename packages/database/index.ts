@@ -3,6 +3,7 @@ export * from "./client";
 export type {
   Muscle,
   Difficulty,
+  Exercise,
   Workout,
   User,
   Progression,

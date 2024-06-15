@@ -6,6 +6,12 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./out",
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@core/*": ["core/*"],
+      "@modules/*": ["modules/*"]
+    }
   }
 }

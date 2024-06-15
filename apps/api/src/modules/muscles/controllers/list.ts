@@ -1,8 +1,9 @@
 import { Context } from "hono";
 import { BlankEnv, BlankInput } from "hono/types";
-import { findAllMuscles } from "../services/find-all";
+import { MuscleDTO } from "@trainix/dto";
+import { findAllMuscles } from "../services";
 
 export async function listMuscles(c: Context<BlankEnv, "/", BlankInput>) {
-  const muscles = await findAllMuscles();
+  const muscles: MuscleDTO[] = await findAllMuscles();
   return c.json(muscles);
 }
