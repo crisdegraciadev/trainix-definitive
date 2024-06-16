@@ -1,9 +1,10 @@
-import { Context } from "hono";
-import { BlankEnv, BlankInput } from "hono/types";
 import { MuscleDTO } from "@trainix/dto";
-import { findAllMuscles } from "../services";
+import { createFactory } from "hono/factory";
+import { listMuscles } from "../services";
 
-export async function listMuscles(c: Context<BlankEnv, "/", BlankInput>) {
-  const muscles: MuscleDTO[] = await findAllMuscles();
+const factory = createFactory();
+
+export const listMusclesHandler = factory.createHandlers(async (c) => {
+  const muscles: MuscleDTO[] = await listMuscles();
   return c.json(muscles);
-}
+});

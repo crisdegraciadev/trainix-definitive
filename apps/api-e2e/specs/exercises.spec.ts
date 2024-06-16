@@ -12,12 +12,12 @@ const USER_DTO = {
 };
 
 describe("/exercises", () => {
-  describe("POST /", () => {
-    it("should find the endpoint", async () => {
-      const { status } = await request.post(PATH);
-      expect(status).not.toBe(404);
-    });
+  beforeEach(async () => {
+    await db.exercise.deleteMany({});
+    await db.user.deleteMany({});
+  });
 
+  describe("POST /", () => {
     it("should return 200 OK and return the created exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
@@ -39,14 +39,6 @@ describe("/exercises", () => {
       expect(body.name).toBe("Push Up");
       expect(body.userId).toBe(user.id);
       expect(body.difficultyId).toBe(difficulty.id);
-
-      await db.exercise.delete({
-        where: { id: body.id },
-      });
-
-      await db.user.delete({
-        where: { id: user.id },
-      });
     });
 
     it("should return 400 BAD REQUEST if no body is provided", async () => {
@@ -88,7 +80,7 @@ describe("/exercises", () => {
         data: USER_DTO,
       });
 
-      const { status: status1, body: body1 } = await request.post(PATH).send({
+      const { status: status1 } = await request.post(PATH).send({
         name: "Push Up",
         userId: user.id,
         difficultyId: difficulty.id,
@@ -104,14 +96,49 @@ describe("/exercises", () => {
 
       expect(status2).toBe(409);
       expect(text2).toBe("exercise with that name is already created");
+    });
+  });
 
-      await db.exercise.delete({
-        where: { id: body1.id },
+  describe("DELETE /:id", () => {
+    it("should return 200 OK and return the deleted exercise", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
       });
 
-      await db.user.delete({
-        where: { id: user.id },
+      const user = await db.user.create({
+        data: USER_DTO,
       });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body } = await request.delete(`${PATH}/${exercise.id}`);
+
+      expect(status).toBe(200);
+      expect(isExerciseDTO(body)).toBeTruthy();
+    });
+
+    it("should return 400 BAD REQUEST if the provided id is not an UUID", async () => {
+      const { status, body, text } = await request.delete(`${PATH}/${1}`);
+
+      expect(status).toBe(400);
+      expect(text).toBe("malformed id");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 404 NOT FOUND if the provided id doesn't exist", async () => {
+      const { status, body, text } = await request.delete(
+        `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
+      );
+
+      expect(status).toBe(404);
+      expect(text).toBe("exercise not found");
+      expect(body).toMatchObject({});
     });
   });
 });

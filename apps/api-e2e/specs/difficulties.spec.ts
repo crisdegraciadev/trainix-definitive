@@ -5,11 +5,6 @@ const PATH = "/difficulties";
 
 describe("/difficulties", () => {
   describe("GET /", () => {
-    it("should find the endpoint", async () => {
-      const { status } = await request.get(PATH);
-      expect(status).not.toBe(404);
-    });
-
     it("should return 200 OK with an array of difficulties", async () => {
       const { status, body } = await request.get(PATH);
 

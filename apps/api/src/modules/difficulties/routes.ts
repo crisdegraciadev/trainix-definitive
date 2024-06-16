@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { listDifficulties } from "./controllers";
+import { listDifficultiesHandler } from "./controllers/list";
 
 export const difficultiesApp = new Hono();
 
-difficultiesApp.get("", listDifficulties);
+difficultiesApp.get("", ...listDifficultiesHandler);

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { listMuscles } from "./controllers";
+import { listMusclesHandler } from "./controllers";
 
 export const musclesApp = new Hono();
 
-musclesApp.get("", listMuscles);
+musclesApp.get("", ...listMusclesHandler);

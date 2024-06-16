@@ -1,13 +1,14 @@
+import { uuidRegex } from "@core/regex/uuid";
+import { DatabaseErrors } from "@core/types/error";
 import { Effect } from "@core/types/result";
 import { CreateExerciseDTO, ExerciseDTO } from "@trainix/dto";
-import { Context } from "hono";
-import { BlankEnv, BlankInput } from "hono/types";
-import { saveExercise } from "../services";
+import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import { DatabaseErrors } from "@core/types/error";
-import { uuidRegex } from "@core/regex/uuid";
+import { createExercise } from "../services";
 
-export async function createExercise(c: Context<BlankEnv, "/", BlankInput>) {
+const factory = createFactory();
+
+export const createExerciseHandler = factory.createHandlers(async (c) => {
   const parseJsonResult = await Effect.tryAsync(() => {
     return c.req.json<CreateExerciseDTO>();
   });
@@ -29,12 +30,12 @@ export async function createExercise(c: Context<BlankEnv, "/", BlankInput>) {
 
   const dto: CreateExerciseDTO = body;
 
-  const saveExerciseResult = await Effect.tryAsync(() => {
-    return saveExercise(dto);
+  const createExerciseResult = await Effect.tryAsync(() => {
+    return createExercise(dto);
   });
 
-  if (!saveExerciseResult.isSuccess) {
-    const { error } = saveExerciseResult;
+  if (!createExerciseResult.isSuccess) {
+    const { error } = createExerciseResult;
 
     if (error instanceof Error) {
       const { message } = error;
@@ -42,32 +43,32 @@ export async function createExercise(c: Context<BlankEnv, "/", BlankInput>) {
       if (message === DatabaseErrors.NOT_UNIQUE) {
         throw new HTTPException(409, {
           message: "exercise with that name is already created",
-          cause: saveExerciseResult.error,
+          cause: createExerciseResult.error,
         });
       }
 
       if (message === DatabaseErrors.RELATED_NOT_FOUND) {
         throw new HTTPException(404, {
           message: "entities to relate not found",
-          cause: saveExerciseResult.error,
+          cause: createExerciseResult.error,
         });
       }
     }
 
     throw new HTTPException(500, {
       message: "exercise cannot be created",
-      cause: saveExerciseResult.error,
+      cause: createExerciseResult.error,
     });
   }
 
-  const { description, ...rest } = saveExerciseResult.value;
+  const { description, ...rest } = createExerciseResult.value;
 
   const exercise: ExerciseDTO = description
     ? { description, ...rest }
     : { ...rest };
 
   return c.json(exercise);
-}
+});
 
 function isValidCreateExerciseDTO(body: unknown): body is CreateExerciseDTO {
   const { name, difficultyId, userId } = body as CreateExerciseDTO;

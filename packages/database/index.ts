@@ -7,6 +7,6 @@ export type {
   Workout,
   User,
   Progression,
-  Acticity,
+  Activity,
   Improve,
 } from "@prisma/client";

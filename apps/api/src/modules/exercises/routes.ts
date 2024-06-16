@@ -1,6 +1,7 @@
 import { Hono } from "hono";
-import { createExercise } from "./controllers";
+import { createExerciseHandler, deleteExerciseHandler } from "./controllers";
 
 export const exercisesApp = new Hono();
 
-exercisesApp.post("/", createExercise);
+exercisesApp.post("/", ...createExerciseHandler);
+exercisesApp.delete("/:id", ...deleteExerciseHandler);

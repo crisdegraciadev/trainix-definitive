@@ -1,5 +1,5 @@
 import { Muscle, db } from "@trainix/database";
 
-export async function findAllMuscles(): Promise<Muscle[]> {
+export async function listMuscles(): Promise<Muscle[]> {
   return db.muscle.findMany();
 }

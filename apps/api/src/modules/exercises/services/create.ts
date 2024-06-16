@@ -2,7 +2,9 @@ import { DatabaseErrors } from "@core/types/error";
 import { Exercise, db } from "@trainix/database";
 import { CreateExerciseDTO } from "@trainix/dto";
 
-export async function saveExercise(dto: CreateExerciseDTO): Promise<Exercise> {
+export async function createExercise(
+  dto: CreateExerciseDTO,
+): Promise<Exercise> {
   const { name } = dto;
 
   const isExerciseFound = await db.exercise.findUnique({

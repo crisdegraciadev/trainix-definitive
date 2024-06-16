@@ -1,9 +1,10 @@
 import { DifficultyDTO } from "@trainix/dto";
-import { Context } from "hono";
-import { BlankEnv, BlankInput } from "hono/types";
-import { findAllDifficulties } from "../services";
+import { createFactory } from "hono/factory";
+import { listDifficulties } from "../services";
 
-export async function listDifficulties(c: Context<BlankEnv, "/", BlankInput>) {
-  const muscles: DifficultyDTO[] = await findAllDifficulties();
+const factory = createFactory();
+
+export const listDifficultiesHandler = factory.createHandlers(async (c) => {
+  const muscles: DifficultyDTO[] = await listDifficulties();
   return c.json(muscles);
-}
+});
