@@ -6,3 +6,5 @@ export type ExerciseDTO = {
 };
 
 export type CreateExerciseDTO = ExerciseDTO;
+
+export type UpdateExerciseDTO = Partial<ExerciseDTO>;

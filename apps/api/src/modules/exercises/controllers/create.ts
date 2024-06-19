@@ -40,16 +40,16 @@ export const createExerciseHandler = factory.createHandlers(async (c) => {
     if (error instanceof Error) {
       const { message } = error;
 
-      if (message === DatabaseErrors.NOT_UNIQUE) {
-        throw new HTTPException(409, {
-          message: "exercise with that name is already created",
+      if (message === DatabaseErrors.RELATED_NOT_FOUND) {
+        throw new HTTPException(404, {
+          message: "entities to relate not found",
           cause: createExerciseResult.error,
         });
       }
 
-      if (message === DatabaseErrors.RELATED_NOT_FOUND) {
-        throw new HTTPException(404, {
-          message: "entities to relate not found",
+      if (message === DatabaseErrors.NOT_UNIQUE) {
+        throw new HTTPException(409, {
+          message: "exercise with that name is already created",
           cause: createExerciseResult.error,
         });
       }
@@ -71,17 +71,31 @@ export const createExerciseHandler = factory.createHandlers(async (c) => {
 });
 
 function isValidCreateExerciseDTO(body: unknown): body is CreateExerciseDTO {
-  const { name, difficultyId, userId } = body as CreateExerciseDTO;
+  const { name, difficultyId, userId, description } = body as CreateExerciseDTO;
 
-  const validations = [
-    !!name,
-    typeof name === "string",
+  const nameValidations = [!!name, typeof name === "string"];
+
+  const difficultyIdValidations = [
     !!difficultyId,
-    typeof difficultyId === "string",
+    typeof name === "string",
     uuidRegex.test(difficultyId),
+  ];
+
+  const userIdValidations = [
     !!userId,
     typeof userId === "string",
     uuidRegex.test(userId),
+  ];
+
+  const descriptionValidations = description
+    ? [typeof description === "string"]
+    : [];
+
+  const validations = [
+    ...nameValidations,
+    ...difficultyIdValidations,
+    ...userIdValidations,
+    ...descriptionValidations,
   ];
 
   return validations.every((check) => check === true);

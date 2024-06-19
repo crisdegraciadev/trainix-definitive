@@ -1,12 +1,14 @@
-export type AwaitedResult<T> =
-  | {
-      isSuccess: true;
-      value: Awaited<T>;
-    }
-  | {
-      isSuccess: false;
-      error?: unknown;
-    };
+export type AwaitedResult<T> = AwaitedSuccess<T> | AwaitedError;
+
+export type AwaitedSuccess<T> = {
+  isSuccess: true;
+  value: Awaited<T>;
+};
+
+export type AwaitedError = {
+  isSuccess: false;
+  error?: unknown;
+};
 
 export type Result<T> =
   | {

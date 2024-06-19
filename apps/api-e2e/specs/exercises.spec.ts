@@ -100,6 +100,131 @@ describe("/exercises", () => {
     });
   });
 
+  describe("PUT /:id", () => {
+    it("should return 200 OK with the updated exercise", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
+      });
+
+      const user = await db.user.create({
+        data: USER_DTO,
+      });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body } = await request
+        .put(`${PATH}/${exercise.id}`)
+        .send({ name: "Pull Up" });
+
+      expect(status).toBe(200);
+      expect(isExerciseDTO(body)).toBeTruthy();
+
+      expect(body.name).toBe("Pull Up");
+      expect(body.userId).toBe(user.id);
+      expect(body.difficultyId).toBe(difficulty.id);
+    });
+
+    it("should return 400 BAD REQUEST if no body is provided", async () => {
+      const { status, body, text } = await request.put(
+        `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
+      );
+
+      expect(status).toBe(400);
+      expect(text).toBe("body not provided");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 400 BAD REQUEST if the body is malformed", async () => {
+      const { status, body, text } = await request
+        .put(`${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`)
+        .send({ userId: 1 });
+
+      expect(status).toBe(400);
+      expect(text).toBe("malformed body");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 404 NOT FOUND if the exercise to update is not found", async () => {
+      const { status, text, body } = await request
+        .put(`${PATH}/263609d5-f4a6-4296-aab2-7953128035c8`)
+        .send({
+          name: "Pull Up",
+          userId: "263609d5-f4a6-4296-aab2-7953128035c5",
+          difficultyId: "263609d5-f4a6-4296-aab2-7953128035c5",
+        });
+
+      expect(status).toBe(404);
+      expect(text).toBe("exercise not found");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 404 NOT FOUND if related entities are not found", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
+      });
+
+      const user = await db.user.create({
+        data: USER_DTO,
+      });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, text, body } = await request
+        .put(`${PATH}/${exercise.id}`)
+        .send({
+          name: "Pull Up",
+          userId: "263609d5-f4a6-4296-aab2-7953128035c5",
+          difficultyId: "263609d5-f4a6-4296-aab2-7953128035c5",
+        });
+
+      expect(status).toBe(404);
+      expect(text).toBe("entities to relate not found");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 409 CONFLICT if the exercise is already created", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
+      });
+
+      const user = await db.user.create({
+        data: USER_DTO,
+      });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body, text } = await request
+        .put(`${PATH}/${exercise.id}`)
+        .send({
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        });
+
+      expect(status).toBe(409);
+      expect(text).toBe("exercise with that name already exists");
+      expect(body).toMatchObject({});
+    });
+  });
+
   describe("GET /", () => {
     it("should return 200 OK with an array of exercises", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
