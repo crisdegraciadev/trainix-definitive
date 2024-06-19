@@ -56,7 +56,7 @@ export const createExerciseHandler = factory.createHandlers(async (c) => {
     }
 
     throw new HTTPException(500, {
-      message: "exercise cannot be created",
+      message: "unexpected database error",
       cause: createExerciseResult.error,
     });
   }

@@ -141,4 +141,49 @@ describe("/exercises", () => {
       expect(body).toMatchObject({});
     });
   });
+
+  describe("GET /:id", () => {
+    it("should return 200 OK and the found exercise", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
+      });
+
+      const user = await db.user.create({
+        data: USER_DTO,
+      });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body } = await request.get(`${PATH}/${exercise.id}`);
+
+      expect(status).toBe(200);
+      expect(isExerciseDTO(body)).toBeTruthy();
+
+      expect(body.id).toBe(exercise.id);
+    });
+
+    it("should return 400 BAD REQUEST if the provided id is not an UUID", async () => {
+      const { status, body, text } = await request.get(`${PATH}/${1}`);
+
+      expect(status).toBe(400);
+      expect(text).toBe("malformed id");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 404 NOT FOUND if the provided id doesn't exist", async () => {
+      const { status, body, text } = await request.get(
+        `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
+      );
+
+      expect(status).toBe(404);
+      expect(text).toBe("exercise not found");
+      expect(body).toMatchObject({});
+    });
+  });
 });

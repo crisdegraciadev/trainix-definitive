@@ -10,12 +10,6 @@ const factory = createFactory();
 export const deleteExerciseHandler = factory.createHandlers(async (c) => {
   const id = c.req.param("id");
 
-  if (!id) {
-    throw new HTTPException(422, {
-      message: "id not provided",
-    });
-  }
-
   if (!uuidRegex.test(id)) {
     throw new HTTPException(400, {
       message: "malformed id",
@@ -41,7 +35,7 @@ export const deleteExerciseHandler = factory.createHandlers(async (c) => {
     }
 
     throw new HTTPException(500, {
-      message: "exercise cannot be created",
+      message: "unexpected database error",
       cause: deleteExerciseResult.error,
     });
   }
