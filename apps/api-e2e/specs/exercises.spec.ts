@@ -1,6 +1,7 @@
 import { db } from "@trainix/database";
 import { request } from "../helpers/request";
 import { isExerciseDTO } from "../helpers/validators";
+import { Json } from "../helpers/types";
 
 const PATH = "/exercises";
 
@@ -99,8 +100,8 @@ describe("/exercises", () => {
     });
   });
 
-  describe("DELETE /:id", () => {
-    it("should return 200 OK and return the deleted exercise", async () => {
+  describe("GET /", () => {
+    it("should return 200 OK with an array of exercises", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });
@@ -109,7 +110,7 @@ describe("/exercises", () => {
         data: USER_DTO,
       });
 
-      const exercise = await db.exercise.create({
+      const exercise1 = await db.exercise.create({
         data: {
           name: "Push Up",
           userId: user.id,
@@ -117,28 +118,27 @@ describe("/exercises", () => {
         },
       });
 
-      const { status, body } = await request.delete(`${PATH}/${exercise.id}`);
+      const exercise2 = await db.exercise.create({
+        data: {
+          name: "Pull Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body } = await request.get(PATH);
 
       expect(status).toBe(200);
-      expect(isExerciseDTO(body)).toBeTruthy();
-    });
+      expect(Array.isArray(body)).toBeTruthy();
 
-    it("should return 400 BAD REQUEST if the provided id is not an UUID", async () => {
-      const { status, body, text } = await request.delete(`${PATH}/${1}`);
+      const exercises: Json[] = body;
 
-      expect(status).toBe(400);
-      expect(text).toBe("malformed id");
-      expect(body).toMatchObject({});
-    });
+      expect(exercises.length).toBe(2);
 
-    it("should return 404 NOT FOUND if the provided id doesn't exist", async () => {
-      const { status, body, text } = await request.delete(
-        `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
-      );
+      const exerciseNames = new Set(exercises.map(({ name }) => name));
 
-      expect(status).toBe(404);
-      expect(text).toBe("exercise not found");
-      expect(body).toMatchObject({});
+      expect(exerciseNames.has(exercise1.name)).toBeTruthy();
+      expect(exerciseNames.has(exercise2.name)).toBeTruthy();
     });
   });
 
@@ -178,6 +178,49 @@ describe("/exercises", () => {
 
     it("should return 404 NOT FOUND if the provided id doesn't exist", async () => {
       const { status, body, text } = await request.get(
+        `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
+      );
+
+      expect(status).toBe(404);
+      expect(text).toBe("exercise not found");
+      expect(body).toMatchObject({});
+    });
+  });
+
+  describe("DELETE /:id", () => {
+    it("should return 200 OK and return the deleted exercise", async () => {
+      const difficulty = await db.difficulty.findUniqueOrThrow({
+        where: { value: "easy" },
+      });
+
+      const user = await db.user.create({
+        data: USER_DTO,
+      });
+
+      const exercise = await db.exercise.create({
+        data: {
+          name: "Push Up",
+          userId: user.id,
+          difficultyId: difficulty.id,
+        },
+      });
+
+      const { status, body } = await request.delete(`${PATH}/${exercise.id}`);
+
+      expect(status).toBe(200);
+      expect(isExerciseDTO(body)).toBeTruthy();
+    });
+
+    it("should return 400 BAD REQUEST if the provided id is not an UUID", async () => {
+      const { status, body, text } = await request.delete(`${PATH}/${1}`);
+
+      expect(status).toBe(400);
+      expect(text).toBe("malformed id");
+      expect(body).toMatchObject({});
+    });
+
+    it("should return 404 NOT FOUND if the provided id doesn't exist", async () => {
+      const { status, body, text } = await request.delete(
         `${PATH}/263609d5-f4a6-4296-aab2-7953128035c5`,
       );
 
