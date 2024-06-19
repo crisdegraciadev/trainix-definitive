@@ -1,9 +1,9 @@
-import { DatabaseErrors } from "@core/types/error";
+import { EntityNotFoundError } from "@core/errors";
+import { uuidRegex } from "@core/regex/uuid";
 import { Effect } from "@core/types/result";
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { deleteExercise } from "../services";
-import { uuidRegex } from "@core/regex/uuid";
 
 const factory = createFactory();
 
@@ -23,15 +23,11 @@ export const deleteExerciseHandler = factory.createHandlers(async (c) => {
   if (!deleteExerciseResult.isSuccess) {
     const { error } = deleteExerciseResult;
 
-    if (error instanceof Error) {
-      const { message } = error;
-
-      if (message === DatabaseErrors.NOT_FOUND) {
-        throw new HTTPException(404, {
-          message: "exercise not found",
-          cause: deleteExerciseResult.error,
-        });
-      }
+    if (error instanceof EntityNotFoundError) {
+      throw new HTTPException(404, {
+        message: "exercise not found",
+        cause: deleteExerciseResult.error,
+      });
     }
 
     throw new HTTPException(500, {

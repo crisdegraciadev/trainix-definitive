@@ -3,8 +3,12 @@ import { Effect } from "@core/types/result";
 import { ExerciseDTO, UpdateExerciseDTO } from "@trainix/dto";
 import { HTTPException } from "hono/http-exception";
 import { updateExercise } from "../services";
-import { DatabaseErrors } from "@core/types/error";
 import { createFactory } from "hono/factory";
+import {
+  EntityNotFoundError,
+  EntityNotUniqueError,
+  RelatedEntititesNotFoundError,
+} from "@core/errors";
 
 const factory = createFactory();
 
@@ -45,29 +49,25 @@ export const updateExerciseHandler = factory.createHandlers(async (c) => {
   if (!updateExerciseResult.isSuccess) {
     const { error } = updateExerciseResult;
 
-    if (error instanceof Error) {
-      const { message } = error;
+    if (error instanceof EntityNotFoundError) {
+      throw new HTTPException(404, {
+        message: "exercise not found",
+        cause: updateExerciseResult.error,
+      });
+    }
 
-      if (message === DatabaseErrors.NOT_FOUND) {
-        throw new HTTPException(404, {
-          message: "exercise not found",
-          cause: updateExerciseResult.error,
-        });
-      }
+    if (error instanceof RelatedEntititesNotFoundError) {
+      throw new HTTPException(404, {
+        message: "entities to relate not found",
+        cause: updateExerciseResult.error,
+      });
+    }
 
-      if (message === DatabaseErrors.RELATED_NOT_FOUND) {
-        throw new HTTPException(404, {
-          message: "entities to relate not found",
-          cause: updateExerciseResult.error,
-        });
-      }
-
-      if (message === DatabaseErrors.NOT_UNIQUE) {
-        throw new HTTPException(409, {
-          message: "exercise with that name already exists",
-          cause: updateExerciseResult.error,
-        });
-      }
+    if (error instanceof EntityNotUniqueError) {
+      throw new HTTPException(409, {
+        message: "exercise with that name already exists",
+        cause: updateExerciseResult.error,
+      });
     }
 
     throw new HTTPException(500, {

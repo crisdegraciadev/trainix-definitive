@@ -5,6 +5,10 @@ import { CreateExerciseDTO, ExerciseDTO } from "@trainix/dto";
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { createExercise } from "../services";
+import {
+  EntityNotUniqueError,
+  RelatedEntititesNotFoundError,
+} from "@core/errors";
 
 const factory = createFactory();
 
@@ -37,22 +41,18 @@ export const createExerciseHandler = factory.createHandlers(async (c) => {
   if (!createExerciseResult.isSuccess) {
     const { error } = createExerciseResult;
 
-    if (error instanceof Error) {
-      const { message } = error;
+    if (error instanceof EntityNotUniqueError) {
+      throw new HTTPException(409, {
+        message: "exercise with that name is already created",
+        cause: createExerciseResult.error,
+      });
+    }
 
-      if (message === DatabaseErrors.RELATED_NOT_FOUND) {
-        throw new HTTPException(404, {
-          message: "entities to relate not found",
-          cause: createExerciseResult.error,
-        });
-      }
-
-      if (message === DatabaseErrors.NOT_UNIQUE) {
-        throw new HTTPException(409, {
-          message: "exercise with that name is already created",
-          cause: createExerciseResult.error,
-        });
-      }
+    if (error instanceof RelatedEntititesNotFoundError) {
+      throw new HTTPException(404, {
+        message: "entities to relate not found",
+        cause: createExerciseResult.error,
+      });
     }
 
     throw new HTTPException(500, {

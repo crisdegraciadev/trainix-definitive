@@ -1,6 +1,10 @@
-import { DatabaseErrors } from "@core/types/error";
 import { Exercise, db } from "@trainix/database";
 import { UpdateExerciseDTO } from "@trainix/dto";
+import {
+  EntityNotFoundError,
+  EntityNotUniqueError,
+  RelatedEntititesNotFoundError,
+} from "@core/errors";
 
 export async function updateExercise(
   id: string,
@@ -25,7 +29,7 @@ async function guardExerciseFound(id: string) {
   });
 
   if (!isExerciseFound) {
-    throw new Error(DatabaseErrors.NOT_FOUND);
+    throw new EntityNotFoundError();
   }
 }
 
@@ -38,7 +42,7 @@ async function guardExerciseWithSameName({ name }: UpdateExerciseDTO) {
     });
 
     if (hasSameName) {
-      throw new Error(DatabaseErrors.NOT_UNIQUE);
+      throw new EntityNotUniqueError();
     }
   }
 }
@@ -52,7 +56,7 @@ async function guardUserNotFound({ userId }: UpdateExerciseDTO) {
     });
 
     if (!isUserFound) {
-      throw new Error(DatabaseErrors.RELATED_NOT_FOUND);
+      throw new RelatedEntititesNotFoundError();
     }
   }
 }
@@ -66,7 +70,7 @@ async function guardDifficultyNotFound({ difficultyId }: UpdateExerciseDTO) {
     });
 
     if (!isDifficultyFound) {
-      throw new Error(DatabaseErrors.RELATED_NOT_FOUND);
+      throw new RelatedEntititesNotFoundError();
     }
   }
 }

@@ -1,45 +1,60 @@
-import { DatabaseErrors } from "@core/types/error";
+import {
+  EntityNotUniqueError,
+  RelatedEntititesNotFoundError,
+} from "@core/errors";
 import { Exercise, db } from "@trainix/database";
 import { CreateExerciseDTO } from "@trainix/dto";
 
 export async function createExercise(
   dto: CreateExerciseDTO,
 ): Promise<Exercise> {
-  const { name } = dto;
+  await guardExerciseExists(dto);
+  await guardUserNotFound(dto);
+  await guardDifficultyNotFound(dto);
 
-  const isExerciseFound = await db.exercise.findUnique({
-    where: {
-      name,
-    },
+  return db.exercise.create({
+    data: dto,
   });
+}
 
-  if (isExerciseFound) {
-    throw new Error(DatabaseErrors.NOT_UNIQUE);
+async function guardExerciseExists({ name }: CreateExerciseDTO) {
+  if (name) {
+    const hasSameName = await db.exercise.findUnique({
+      where: {
+        name,
+      },
+    });
+
+    if (hasSameName) {
+      throw new EntityNotUniqueError();
+    }
   }
+}
 
-  const { userId } = dto;
+async function guardUserNotFound({ userId }: CreateExerciseDTO) {
+  if (userId) {
+    const isUserFound = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
-  const isUserFound = await db.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-
-  if (!isUserFound) {
-    throw new Error(DatabaseErrors.RELATED_NOT_FOUND);
+    if (!isUserFound) {
+      throw new RelatedEntititesNotFoundError();
+    }
   }
+}
 
-  const { difficultyId } = dto;
+async function guardDifficultyNotFound({ difficultyId }: CreateExerciseDTO) {
+  if (difficultyId) {
+    const isDifficultyFound = await db.difficulty.findUnique({
+      where: {
+        id: difficultyId,
+      },
+    });
 
-  const isDifficultyFound = await db.difficulty.findUnique({
-    where: {
-      id: difficultyId,
-    },
-  });
-
-  if (!isDifficultyFound) {
-    throw new Error(DatabaseErrors.RELATED_NOT_FOUND);
+    if (!isDifficultyFound) {
+      throw new RelatedEntititesNotFoundError();
+    }
   }
-
-  return db.exercise.create({ data: dto });
 }
