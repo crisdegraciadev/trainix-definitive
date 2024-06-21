@@ -3,15 +3,19 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./out",
-    "types": ["node"],
-    "baseUrl": "./src",
+    "types": ["node", "jest"],
+    "baseUrl": "./",
     "paths": {
-      "@config/*": ["config/*"],
-      "@core/*": ["core/*"],
-      "@modules/*": ["modules/*"]
+      "@config/*": ["src/config/*"],
+      "@injections/*": ["src/injections/*"],
+      "@routes/*": ["src/routes/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@core/*": ["src/_old/core/*"],
+      "@modules/*": ["src/_old/modules/*"]
     }
   }
 }

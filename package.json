@@ -12,6 +12,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
     "prettier": "^3.2.5",
     "turbo": "^2.0.4"
   },
@@ -21,6 +23,12 @@
   "packageManager": "npm@10.2.4",
   "workspaces": [
     "apps/*",
-    "packages/*"
-  ]
+    "packages/*",
+    "contexts/*"
+  ],
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "http-status": "^1.7.4"
+  }
 }
