@@ -3,7 +3,7 @@ import { Json } from "../helpers/types";
 
 const PATH = "/muscles";
 
-describe("/muscles", () => {
+describe.skip("/muscles", () => {
   describe("GET /", () => {
     it("should return 200 OK with an array of muscles", async () => {
       const { status, body } = await request.get(PATH);

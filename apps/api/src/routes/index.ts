@@ -6,7 +6,7 @@ export function registerRoutes(router: Router) {
   routes.map((route) => register(route, router));
 }
 
-export function register(routePath: string, app: Router) {
+async function register(routePath: string, app: Router) {
   const route = require(routePath);
-  route.register(app);
+  await route.register(app);
 }

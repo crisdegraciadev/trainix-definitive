@@ -1,12 +1,9 @@
 import { StatusGetController } from "@controllers/status-get-controller";
-import { INJECTION_IDS } from "@injections/application";
-import container from "@injections/index";
+import { containerDI } from "@injections/index";
 import { Router } from "express";
 
-export const register = (router: Router) => {
-  const controller: StatusGetController = container.get(
-    INJECTION_IDS.StatusGetController,
-  );
+export const register = async (router: Router) => {
+  const { StatusGetController } = containerDI;
 
-  router.get("/status", (req, res) => controller.run(req, res));
+  router.get("/status", (req, res) => StatusGetController.run(req, res));
 };

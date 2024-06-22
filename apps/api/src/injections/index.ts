@@ -1,10 +1,7 @@
-import { ContainerBuilder } from "node-dependency-injection";
-import { INJECTIONS } from "./application";
+import { DIContainer } from "rsdi";
+import { controllersDI } from "./apps";
+import { contextsDI } from "./contexts";
 
-const container = new ContainerBuilder();
-
-for (const [key, service] of Object.entries(INJECTIONS)) {
-  container.register(key, service);
-}
-
-export default container;
+export const containerDI = new DIContainer()
+  .extend(contextsDI)
+  .extend(controllersDI);
