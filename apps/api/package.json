@@ -23,7 +23,8 @@
     "i": "^0.3.7",
     "node-dependency-injection": "^3.1.2",
     "npm": "^10.8.1",
-    "rsdi": "^3.0.3"
+    "rsdi": "^3.0.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@trainix-pkgs/dto": "*",

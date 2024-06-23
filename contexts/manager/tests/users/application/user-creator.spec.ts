@@ -71,4 +71,6 @@ describe("UserCreator", () => {
       expect(error).toBeInstanceOf(Error);
     }
   });
+
+  it.todo("should throw an error if a user with this email already exists");
 });

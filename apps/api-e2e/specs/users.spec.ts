@@ -23,5 +23,33 @@ describe("/users", () => {
 
       expect(status).toBe(201);
     });
+
+    it("should return 422 UNPROCESSABLE CONTENT", async () => {
+      const { status: status1 } = await request
+        .put(PATH)
+        .send({ ...CREATE_USER_DTO, id: "56" });
+
+      expect(status1).toBe(422);
+
+      const { status: status2 } = await request
+        .put(PATH)
+        .send({ ...CREATE_USER_DTO, name: "jh0n1" });
+
+      expect(status2).toBe(422);
+
+      const { status: status3 } = await request
+        .put(PATH)
+        .send({ ...CREATE_USER_DTO, surname: "d03" });
+
+      expect(status3).toBe(422);
+
+      const { status: status4 } = await request
+        .put(PATH)
+        .send({ ...CREATE_USER_DTO, email: "jhon.doe" });
+
+      expect(status4).toBe(422);
+    });
+
+    it.todo("should return 409 CONFLICT");
   });
 });
