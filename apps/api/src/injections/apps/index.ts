@@ -1,12 +1,13 @@
 import { StatusGetController } from "@controllers/status-get-controller";
 import { UserPutController } from "@controllers/user-put-controller";
 import { UserContextDI } from "@injections/contexts/user";
-import { DIContainer } from "rsdi";
+
+export type ControllersDI = ReturnType<typeof controllersDI>;
 
 export const controllersDI = (container: UserContextDI) => {
   const { UserCreator } = container;
 
-  return new DIContainer()
+  return container
     .add("StatusGetController", () => {
       return new StatusGetController();
     })

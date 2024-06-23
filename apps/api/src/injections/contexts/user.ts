@@ -5,6 +5,8 @@ import {
 } from "@trainix-contexts/manager";
 import { DIContainer } from "rsdi";
 
+export type UserContextDI = ReturnType<typeof userContextDI>;
+
 export const userContextDI = () => {
   return new DIContainer()
     .add("PostgresUserRepository", () => {
