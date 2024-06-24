@@ -7,7 +7,11 @@ export class UserPutController implements Controller {
   constructor(private userCreator: UserCreator) {}
 
   async run(req: Request, res: Response): Promise<void> {
-    await this.userCreator.run({ ...req.body });
-    res.status(httpStatus.CREATED).send();
+    try {
+      await this.userCreator.run({ ...req.body });
+      res.status(httpStatus.CREATED).send();
+    } catch (error) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
