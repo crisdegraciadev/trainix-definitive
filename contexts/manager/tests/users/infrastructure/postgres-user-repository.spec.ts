@@ -6,6 +6,7 @@ import { UserName } from "../../../modules/users/domain/value-objects/user-name"
 import { UserSurname } from "../../../modules/users/domain/value-objects/user-surname";
 import { UserEmail } from "../../../modules/users/domain/value-objects/user-email";
 import { UserPasswordHash } from "../../../modules/users/domain/value-objects/user-password-hash";
+import { UniqueConstraintError } from "../../../modules/shared/infrastructure/errors/unique-constraint-error";
 
 describe("PostgresUserRepository", () => {
   afterEach(async () => {
@@ -31,5 +32,27 @@ describe("PostgresUserRepository", () => {
     const user = await repository.search(expectedUser.id.value);
 
     expect(user).toEqual(expectedUser);
+  });
+
+  it("should throw if email already has been used", async () => {
+    const expectedUser = new User({
+      id: UserId.random(),
+      name: new UserName("Jhon"),
+      surname: new UserSurname("Doe"),
+      email: new UserEmail("jhon.doe@gmail.com"),
+      passwordHash: new UserPasswordHash("987654321"),
+    });
+
+    const repository = new PostgresUserRepository();
+
+    await repository.save(expectedUser);
+
+    expect.assertions(1);
+
+    try {
+      await repository.save(expectedUser);
+    } catch (error) {
+      expect(error).toBeInstanceOf(UniqueConstraintError);
+    }
   });
 });

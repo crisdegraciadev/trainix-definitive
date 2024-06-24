@@ -1,3 +1,6 @@
+import { UniqueConstraintError } from "../../shared/infrastructure/errors/unique-constraint-error";
+import { EmailConflictError } from "../domain/errors/email-conflict-error";
+import { PasswordMissmatchError } from "../domain/errors/password-missmatch-error";
 import { User } from "../domain/user";
 import { PasswordHasher } from "../domain/user-password-hasher";
 import { UserRepository } from "../domain/user-repository";
@@ -18,7 +21,9 @@ export class UserCreator {
     const { password, confirmPassword, ...userData } = dto;
 
     if (password !== confirmPassword) {
-      throw new Error("Provided password and passwordConfirm are not equal");
+      throw new PasswordMissmatchError(
+        "Provided password and passwordConfirm are not equal",
+      );
     }
 
     const { id, name, surname, email } = userData;
@@ -32,6 +37,16 @@ export class UserCreator {
       passwordHash: new UserPasswordHash(passwordHash),
     });
 
-    return this.repository.save(user);
+    try {
+      await this.repository.save(user);
+    } catch (error: unknown) {
+      this.handleError(error);
+    }
+  }
+
+  private handleError(error: unknown) {
+    if (error instanceof UniqueConstraintError) {
+      throw new EmailConflictError("email alreay in use");
+    }
   }
 }

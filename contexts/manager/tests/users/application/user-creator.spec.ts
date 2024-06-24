@@ -1,5 +1,9 @@
+import { InvalidArgumentError } from "../../../modules/shared/domain/errors/invalid-argument-error";
+import { UniqueConstraintError } from "../../../modules/shared/infrastructure/errors/unique-constraint-error";
 import { UserCreator } from "../../../modules/users";
 import { UserCreatorRequest } from "../../../modules/users/application/types/user-creator-request";
+import { EmailConflictError } from "../../../modules/users/domain/errors/email-conflict-error";
+import { PasswordMissmatchError } from "../../../modules/users/domain/errors/password-missmatch-error";
 import { User } from "../../../modules/users/domain/user";
 import { UserEmail } from "../../../modules/users/domain/value-objects/user-email";
 import { UserId } from "../../../modules/users/domain/value-objects/user-id";
@@ -13,6 +17,15 @@ describe("UserCreator", () => {
   let repository: UserRepositoryMock;
   let passwordHasher: PasswordHasherMock;
 
+  const validDto: UserCreatorRequest = {
+    id: UserId.random().value,
+    name: "Jhon",
+    surname: "Doe",
+    email: "jhon.doe@gmail.com",
+    password: "abcd1234X",
+    confirmPassword: "abcd1234X",
+  };
+
   beforeEach(() => {
     repository = new UserRepositoryMock();
     passwordHasher = new PasswordHasherMock();
@@ -21,18 +34,9 @@ describe("UserCreator", () => {
   it("should create a valid user", async () => {
     const creator = new UserCreator(repository, passwordHasher);
 
-    const dto: UserCreatorRequest = {
-      id: UserId.random().value,
-      name: "Jhon",
-      surname: "Doe",
-      email: "jhon.doe@gmail.com",
-      password: "abcd1234X",
-      confirmPassword: "abcd1234X",
-    };
+    await creator.run(validDto);
 
-    await creator.run(dto);
-
-    const { password, confirmPassword, ...userData } = dto;
+    const { password, confirmPassword, ...userData } = validDto;
     const { id, name, surname, email } = userData;
 
     const expectedUser = new User({
@@ -41,7 +45,7 @@ describe("UserCreator", () => {
       name: new UserName(name),
       surname: new UserSurname(surname),
       email: new UserEmail(email),
-      passwordHash: new UserPasswordHash(`hashed_${dto.password}`),
+      passwordHash: new UserPasswordHash(`hashed_${validDto.password}`),
     });
 
     repository.assertSaveHaveBeenCalledWith(expectedUser);
@@ -50,28 +54,18 @@ describe("UserCreator", () => {
   it("should hash the password", async () => {
     const creator = new UserCreator(repository, passwordHasher);
 
-    const dto: UserCreatorRequest = {
-      id: UserId.random().value,
-      name: "Jhon",
-      surname: "Doe",
-      email: "jhon.doe@gmail.com",
-      password: "abcd1234X",
-      confirmPassword: "abcd1234X",
-    };
+    await creator.run(validDto);
 
-    await creator.run(dto);
-
-    passwordHasher.assertHashHasBeenCalledWith(dto.password);
+    passwordHasher.assertHashHasBeenCalledWith(validDto.password);
   });
 
   it("should throw an error if passwords are not the same", async () => {
+    expect.assertions(1);
+
     const creator = new UserCreator(repository, passwordHasher);
 
     const dto: UserCreatorRequest = {
-      id: UserId.random().value,
-      name: "Jhon",
-      surname: "Doe",
-      email: "jhon.doe@gmail.com",
+      ...validDto,
       password: "X1234abcd",
       confirmPassword: "abcd1234X",
     };
@@ -79,9 +73,76 @@ describe("UserCreator", () => {
     try {
       await creator.run(dto);
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(PasswordMissmatchError);
     }
   });
 
-  it.todo("should throw an error if a user with this email already exists");
+  it("should throw an error if name has numbers", async () => {
+    expect.assertions(1);
+
+    const creator = new UserCreator(repository, passwordHasher);
+
+    const dto: UserCreatorRequest = {
+      ...validDto,
+      name: "Jh0n",
+    };
+
+    try {
+      await creator.run(dto);
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidArgumentError);
+    }
+  });
+
+  it("should throw an error if surname has numbers", async () => {
+    expect.assertions(1);
+
+    const creator = new UserCreator(repository, passwordHasher);
+
+    const dto: UserCreatorRequest = {
+      ...validDto,
+      surname: "D03",
+    };
+
+    try {
+      await creator.run(dto);
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidArgumentError);
+    }
+  });
+
+  it("should throw an error if email is invalid", async () => {
+    expect.assertions(1);
+
+    const creator = new UserCreator(repository, passwordHasher);
+
+    const dto: UserCreatorRequest = {
+      ...validDto,
+      email: "cris@com",
+    };
+
+    try {
+      await creator.run(dto);
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidArgumentError);
+    }
+  });
+
+  it("should throw an error if a user with this email already exists", async () => {
+    const creator = new UserCreator(repository, passwordHasher);
+
+    await creator.run(validDto);
+
+    expect.assertions(1);
+
+    try {
+      jest.spyOn(repository, "save").mockImplementationOnce(() => {
+        throw new UniqueConstraintError();
+      });
+
+      await creator.run(validDto);
+    } catch (error) {
+      expect(error).toBeInstanceOf(EmailConflictError);
+    }
+  });
 });
