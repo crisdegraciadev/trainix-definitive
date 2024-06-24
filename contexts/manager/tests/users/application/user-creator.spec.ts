@@ -1,5 +1,11 @@
-import { UserCreator, UserCreatorDto } from "../../../modules/users";
+import { UserCreator } from "../../../modules/users";
+import { UserCreatorRequest } from "../../../modules/users/application/types/user-creator-request";
 import { User } from "../../../modules/users/domain/user";
+import { UserEmail } from "../../../modules/users/domain/value-objects/user-email";
+import { UserId } from "../../../modules/users/domain/value-objects/user-id";
+import { UserName } from "../../../modules/users/domain/value-objects/user-name";
+import { UserPasswordHash } from "../../../modules/users/domain/value-objects/user-password-hash";
+import { UserSurname } from "../../../modules/users/domain/value-objects/user-surname";
 import { PasswordHasherMock } from "../__mocks__/password-hasher-mock";
 import { UserRepositoryMock } from "../__mocks__/user-repository-mock";
 
@@ -15,8 +21,8 @@ describe("UserCreator", () => {
   it("should create a valid user", async () => {
     const creator = new UserCreator(repository, passwordHasher);
 
-    const dto: UserCreatorDto = {
-      id: "ba768462-8fad-4c5d-9a8a-2d2a0133f996",
+    const dto: UserCreatorRequest = {
+      id: UserId.random().value,
       name: "Jhon",
       surname: "Doe",
       email: "jhon.doe@gmail.com",
@@ -27,10 +33,15 @@ describe("UserCreator", () => {
     await creator.run(dto);
 
     const { password, confirmPassword, ...userData } = dto;
+    const { id, name, surname, email } = userData;
 
     const expectedUser = new User({
       ...userData,
-      passwordHash: `hashed_${dto.password}`,
+      id: new UserId(id),
+      name: new UserName(name),
+      surname: new UserSurname(surname),
+      email: new UserEmail(email),
+      passwordHash: new UserPasswordHash(`hashed_${dto.password}`),
     });
 
     repository.assertSaveHaveBeenCalledWith(expectedUser);
@@ -39,8 +50,8 @@ describe("UserCreator", () => {
   it("should hash the password", async () => {
     const creator = new UserCreator(repository, passwordHasher);
 
-    const dto: UserCreatorDto = {
-      id: "ba768462-8fad-4c5d-9a8a-2d2a0133f996",
+    const dto: UserCreatorRequest = {
+      id: UserId.random().value,
       name: "Jhon",
       surname: "Doe",
       email: "jhon.doe@gmail.com",
@@ -56,8 +67,8 @@ describe("UserCreator", () => {
   it("should throw an error if passwords are not the same", async () => {
     const creator = new UserCreator(repository, passwordHasher);
 
-    const dto: UserCreatorDto = {
-      id: "ba768462-8fad-4c5d-9a8a-2d2a0133f996",
+    const dto: UserCreatorRequest = {
+      id: UserId.random().value,
       name: "Jhon",
       surname: "Doe",
       email: "jhon.doe@gmail.com",

@@ -1,17 +1,13 @@
-import { Request, Response } from "express";
-import { Controller } from "./controller";
-import httpStatus from "http-status";
 import { UserCreator } from "@trainix-contexts/manager";
-import { z } from "zod";
+import { Request, Response } from "express";
+import httpStatus from "http-status";
+import { Controller } from "./controller";
 
 export class UserPutController implements Controller {
   constructor(private userCreator: UserCreator) {}
 
   async run(req: Request, res: Response): Promise<void> {
-    const dto = req.body;
-
-    await this.userCreator.run({ ...dto });
-
+    await this.userCreator.run({ ...req.body });
     res.status(httpStatus.CREATED).send();
   }
 }
