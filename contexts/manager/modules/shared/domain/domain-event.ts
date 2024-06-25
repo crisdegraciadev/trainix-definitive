@@ -2,9 +2,9 @@ import { Uuid } from "./value-objects/uuid";
 
 type DomainEventDto = {
   aggregateId: string;
-  eventId: string;
+  eventId?: string;
   eventName: string;
-  ocurredOn: Date;
+  occurredOn?: Date;
 };
 
 type FromPrimitivesDto = Omit<DomainEventDto, "eventName"> & {
@@ -25,15 +25,15 @@ export abstract class DomainEvent {
   readonly aggregateId: string;
   readonly eventId: string;
   readonly eventName: string;
-  readonly ocurredOn: Date;
+  readonly occurredOn: Date;
 
   constructor(dto: DomainEventDto) {
-    const { aggregateId, eventId, eventName, ocurredOn } = dto;
+    const { aggregateId, eventId, eventName, occurredOn } = dto;
 
     this.aggregateId = aggregateId;
     this.eventId = eventId ?? Uuid.random().value;
     this.eventName = eventName;
-    this.ocurredOn = ocurredOn ?? new Date();
+    this.occurredOn = occurredOn ?? new Date();
   }
 
   abstract toPrimitives(): DomainEventAttributes;

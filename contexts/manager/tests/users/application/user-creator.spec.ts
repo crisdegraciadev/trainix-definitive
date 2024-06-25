@@ -39,7 +39,7 @@ describe("UserCreator", () => {
     const { password, confirmPassword, ...userData } = validDto;
     const { id, name, surname, email } = userData;
 
-    const expectedUser = new User({
+    const expectedUser = User.create({
       ...userData,
       id: new UserId(id),
       name: new UserName(name),

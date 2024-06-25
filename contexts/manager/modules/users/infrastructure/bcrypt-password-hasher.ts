@@ -1,5 +1,5 @@
-import { PasswordHasher } from "../domain/user-password-hasher";
 import bcrypt from "bcrypt";
+import { PasswordHasher } from "../domain/dependencies/user-password-hasher";
 
 export class BcryptPasswordHasher implements PasswordHasher {
   async hash(value: string): Promise<string> {

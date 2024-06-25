@@ -18,7 +18,7 @@ describe("PostgresUserRepository", () => {
   });
 
   it("should save a user", async () => {
-    const expectedUser = new User({
+    const expectedUser = User.create({
       id: UserId.random(),
       name: new UserName("Jhon"),
       surname: new UserSurname("Doe"),
@@ -35,7 +35,7 @@ describe("PostgresUserRepository", () => {
   });
 
   it("should throw if email already has been used", async () => {
-    const expectedUser = new User({
+    const expectedUser = User.create({
       id: UserId.random(),
       name: new UserName("Jhon"),
       surname: new UserSurname("Doe"),

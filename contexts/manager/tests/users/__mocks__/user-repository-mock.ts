@@ -1,5 +1,5 @@
+import { UserRepository } from "../../../modules/users/domain/dependencies/user-repository";
 import { User } from "../../../modules/users/domain/user";
-import { UserRepository } from "../../../modules/users/domain/user-repository";
 
 export class UserRepositoryMock implements UserRepository {
   private saveMock: jest.Mock;

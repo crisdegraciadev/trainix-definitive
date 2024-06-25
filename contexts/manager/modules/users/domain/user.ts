@@ -1,3 +1,4 @@
+import { AggregateRoot } from "../../shared/domain/aggregate-root";
 import { UserEmail } from "./value-objects/user-email";
 import { UserId } from "./value-objects/user-id";
 import { UserName } from "./value-objects/user-name";
@@ -12,7 +13,7 @@ type UserAggregateDto = {
   passwordHash: UserPasswordHash;
 };
 
-export class User {
+export class User extends AggregateRoot {
   readonly id: UserId;
   readonly name: UserName;
   readonly surname: UserSurname;
@@ -20,6 +21,8 @@ export class User {
   readonly passwordHash: UserPasswordHash;
 
   constructor(dto: UserAggregateDto) {
+    super();
+
     const { id, name, surname, email, passwordHash } = dto;
 
     this.id = id;
@@ -27,5 +30,15 @@ export class User {
     this.surname = surname;
     this.email = email;
     this.passwordHash = passwordHash;
+  }
+
+  static create(dto: UserAggregateDto): User {
+    const user = new User(dto);
+
+    return user;
+  }
+
+  toPrimitives() {
+    throw new Error("Method not implemented.");
   }
 }

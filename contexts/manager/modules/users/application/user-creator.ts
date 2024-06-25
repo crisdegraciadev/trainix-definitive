@@ -1,9 +1,9 @@
 import { UniqueConstraintError } from "../../shared/infrastructure/errors/unique-constraint-error";
+import { PasswordHasher } from "../domain/dependencies/user-password-hasher";
+import { UserRepository } from "../domain/dependencies/user-repository";
 import { EmailConflictError } from "../domain/errors/email-conflict-error";
 import { PasswordMissmatchError } from "../domain/errors/password-missmatch-error";
 import { User } from "../domain/user";
-import { PasswordHasher } from "../domain/user-password-hasher";
-import { UserRepository } from "../domain/user-repository";
 import { UserEmail } from "../domain/value-objects/user-email";
 import { UserId } from "../domain/value-objects/user-id";
 import { UserName } from "../domain/value-objects/user-name";
@@ -29,7 +29,7 @@ export class UserCreator {
     const { id, name, surname, email } = userData;
     const passwordHash = await this.passwordHasher.hash(password);
 
-    const user = new User({
+    const user = User.create({
       id: new UserId(id),
       name: new UserName(name),
       surname: new UserSurname(surname),

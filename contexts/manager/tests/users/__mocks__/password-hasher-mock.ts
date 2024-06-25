@@ -1,4 +1,4 @@
-import { PasswordHasher } from "../../../modules/users/domain/user-password-hasher";
+import { PasswordHasher } from "../../../modules/users/domain/dependencies/user-password-hasher";
 
 export class PasswordHasherMock implements PasswordHasher {
   hashMock: jest.Mock;
