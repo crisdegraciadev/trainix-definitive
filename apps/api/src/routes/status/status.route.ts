@@ -1,4 +1,3 @@
-import { StatusGetController } from "@controllers/status-get-controller";
 import { containerDI } from "@injections/index";
 import { Router } from "express";
 

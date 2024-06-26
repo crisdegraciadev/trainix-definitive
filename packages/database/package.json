@@ -15,11 +15,11 @@
     "cp:test": "cp .env.test .env"
   },
   "dependencies": {
-    "@prisma/client": "^5.15.0"
+    "@prisma/client": "5.15.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.1",
-    "prisma": "^5.15.0",
+    "prisma": "5.15.0",
     "ts-node": "^10.9.2"
   },
   "keywords": [],

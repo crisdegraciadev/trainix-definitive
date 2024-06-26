@@ -1,4 +1,5 @@
 import { InvalidArgumentError } from "../../../modules/shared/domain/errors/invalid-argument-error";
+import { Failure } from "../../../modules/shared/domain/result";
 import { UniqueConstraintError } from "../../../modules/shared/infrastructure/errors/unique-constraint-error";
 import { UserCreator } from "../../../modules/users";
 import { UserCreatorRequest } from "../../../modules/users/application/types/user-creator-request";
@@ -60,8 +61,6 @@ describe("UserCreator", () => {
   });
 
   it("should throw an error if passwords are not the same", async () => {
-    expect.assertions(1);
-
     const creator = new UserCreator(repository, passwordHasher);
 
     const dto: UserCreatorRequest = {
@@ -70,11 +69,10 @@ describe("UserCreator", () => {
       confirmPassword: "abcd1234X",
     };
 
-    try {
-      await creator.run(dto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(PasswordMissmatchError);
-    }
+    const { isSuccess, error } = (await creator.run(dto)) as Failure;
+
+    expect(isSuccess).toBe(false);
+    expect(error).toBeInstanceOf(PasswordMissmatchError);
   });
 
   it("should throw an error if name has numbers", async () => {

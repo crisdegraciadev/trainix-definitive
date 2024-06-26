@@ -19,7 +19,7 @@ describe.skip("/exercises", () => {
   });
 
   describe("POST /", () => {
-    it("should return 200 OK and return the created exercise", async () => {
+    it("should return 201 CREATER and return the created exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });

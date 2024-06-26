@@ -1,5 +1,6 @@
 import { db } from "@trainix-pkgs/database";
 import { request } from "../helpers/request";
+import { isUserDTO } from "../helpers/validators";
 
 const PATH = "/users";
 
@@ -18,13 +19,14 @@ describe("/users", () => {
   });
 
   describe("PUT /:id", () => {
-    it("should return 201 CREATED", async () => {
-      const { status } = await request.put(PATH).send(CREATE_USER_DTO);
+    it("should return 201 CREATED and the created user", async () => {
+      const { status, body } = await request.put(PATH).send(CREATE_USER_DTO);
 
       expect(status).toBe(201);
+      expect(isUserDTO(body.user)).toBeTruthy();
     });
 
-    it("should return 422 UNPROCESSABLE CONTENT", async () => {
+    it("should return 422 UNPROCESSABLE CONTENT if the dto is invalid", async () => {
       const { status: status1 } = await request
         .put(PATH)
         .send({ ...CREATE_USER_DTO, id: "56" });
@@ -50,6 +52,12 @@ describe("/users", () => {
       expect(status4).toBe(422);
     });
 
-    it.todo("should return 409 CONFLICT");
+    it("should return 409 CONFLICT", async () => {
+      await request.put(PATH).send(CREATE_USER_DTO);
+      const { status, body } = await request.put(PATH).send(CREATE_USER_DTO);
+
+      expect(status).toBe(409);
+      expect(body.message).toMatch("email already in use");
+    });
   });
 });
