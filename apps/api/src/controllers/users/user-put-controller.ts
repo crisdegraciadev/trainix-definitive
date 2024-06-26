@@ -1,8 +1,4 @@
-import {
-  EmailConflictError,
-  PasswordMissmatchError,
-  UserCreator,
-} from "@trainix-contexts/manager";
+import { EmailConflictError, PasswordMissmatchError, UserCreator } from "@trainix-contexts/manager";
 import { Controller, TypedResponse } from "../controller";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
@@ -20,12 +16,14 @@ export class UserPutController implements Controller<UserDTO> {
       if (error instanceof EmailConflictError) {
         return res.status(httpStatus.CONFLICT).send({
           message: error.message,
+          error,
         });
       }
 
       if (error instanceof PasswordMissmatchError) {
         return res.status(httpStatus.UNPROCESSABLE_ENTITY).send({
           message: error.message,
+          error,
         });
       }
 
