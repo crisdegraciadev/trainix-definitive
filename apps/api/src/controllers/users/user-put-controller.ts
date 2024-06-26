@@ -3,18 +3,15 @@ import {
   PasswordMissmatchError,
   UserCreator,
 } from "@trainix-contexts/manager";
-import { Controller } from "../controller";
-import { UserMapper } from "src/mappers/user-mapper";
+import { Controller, TypedResponse } from "../controller";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { UserDTO } from "@trainix-pkgs/dto";
 
-export class UserPutController implements Controller {
-  constructor(
-    private userCreator: UserCreator,
-    private userMapper: UserMapper,
-  ) {}
+export class UserPutController implements Controller<UserDTO> {
+  constructor(private userCreator: UserCreator) {}
 
-  async run(req: Request, res: Response) {
+  async run(req: Request, res: Response<TypedResponse<UserDTO>>) {
     const result = await this.userCreator.run({ ...req.body });
 
     if (!result.isSuccess) {
@@ -37,9 +34,8 @@ export class UserPutController implements Controller {
       });
     }
 
-    const { value } = result;
-    const user = this.userMapper.from(value);
+    const { value: data } = result;
 
-    res.status(httpStatus.CREATED).send({ user });
+    res.status(httpStatus.CREATED).send({ data });
   }
 }

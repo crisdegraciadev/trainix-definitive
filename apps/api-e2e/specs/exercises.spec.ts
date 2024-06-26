@@ -2,6 +2,7 @@ import { db } from "@trainix-pkgs/database";
 import { request } from "../helpers/request";
 import { isExerciseDTO } from "../helpers/validators";
 import { Json } from "../helpers/types";
+import { Uuid } from "../../../contexts/manager/modules/shared/domain/value-objects/uuid";
 
 const PATH = "/exercises";
 
@@ -12,37 +13,49 @@ const USER_DTO = {
   passwordHash: "123456789",
 };
 
-describe.skip("/exercises", () => {
+describe("/exercises", () => {
   beforeEach(async () => {
     await db.exercise.deleteMany({});
     await db.user.deleteMany({});
   });
 
-  describe("POST /", () => {
+  describe("PUT /", () => {
     it("should return 201 CREATER and return the created exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });
 
+      const muslces = await db.muscle.findMany({ take: 3 });
+      const muscleIds = muslces.map(({ id }) => id);
+
       const user = await db.user.create({
         data: USER_DTO,
       });
 
-      const { status, body } = await request.post(PATH).send({
+      const { status, body } = await request.put(PATH).send({
+        id: Uuid.random().value,
         name: "Push Up",
         userId: user.id,
         difficultyId: difficulty.id,
+        muscleIds,
       });
 
-      expect(status).toBe(200);
+      expect(status).toBe(201);
+
       expect(isExerciseDTO(body)).toBeTruthy();
 
       expect(body.name).toBe("Push Up");
       expect(body.userId).toBe(user.id);
       expect(body.difficultyId).toBe(difficulty.id);
+      expect(body.muscleIds).toBe(muscleIds);
     });
 
-    it("should return 400 BAD REQUEST if no body is provided", async () => {
+    it("should return 422 UNPROCESSABLE ENTITY if the dto is invalid", async () => {
+      const { status: status1 } = await request.put(PATH).send({});
+      expect(status1).toBe(422);
+    });
+
+    it.skip("should return 400 BAD REQUEST if no body is provided", async () => {
       const { status, body, text } = await request.post(PATH);
 
       expect(status).toBe(400);
@@ -50,7 +63,7 @@ describe.skip("/exercises", () => {
       expect(body).toMatchObject({});
     });
 
-    it("should return 400 BAD REQUEST if the body is malformed", async () => {
+    it.skip("should return 400 BAD REQUEST if the body is malformed", async () => {
       const { status, body, text } = await request
         .post(PATH)
         .send({ name: "Push Up" });
@@ -60,7 +73,7 @@ describe.skip("/exercises", () => {
       expect(body).toMatchObject({});
     });
 
-    it("should return 404 NOT FOUND if related entities are not found", async () => {
+    it.skip("should return 404 NOT FOUND if related entities are not found", async () => {
       const { status, body, text } = await request.post(PATH).send({
         name: "Push Up",
         userId: "263609d5-f4a6-4296-aab2-7953128035c5",
@@ -72,7 +85,7 @@ describe.skip("/exercises", () => {
       expect(body).toMatchObject({});
     });
 
-    it("should return 409 CONFLICT if the exercise is already created", async () => {
+    it.skip("should return 409 CONFLICT if the exercise is already created", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });
@@ -100,7 +113,7 @@ describe.skip("/exercises", () => {
     });
   });
 
-  describe("PUT /:id", () => {
+  describe.skip("PUT /:id", () => {
     it("should return 200 OK with the updated exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
@@ -225,7 +238,7 @@ describe.skip("/exercises", () => {
     });
   });
 
-  describe("GET /", () => {
+  describe.skip("GET /", () => {
     it("should return 200 OK with an array of exercises", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
@@ -267,7 +280,7 @@ describe.skip("/exercises", () => {
     });
   });
 
-  describe("GET /:id", () => {
+  describe.skip("GET /:id", () => {
     it("should return 200 OK and the found exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
@@ -312,7 +325,7 @@ describe.skip("/exercises", () => {
     });
   });
 
-  describe("DELETE /:id", () => {
+  describe.skip("DELETE /:id", () => {
     it("should return 200 OK and return the deleted exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },

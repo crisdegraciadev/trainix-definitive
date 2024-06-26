@@ -1,3 +1,4 @@
+import { UserDTO } from "@trainix-pkgs/dto";
 import { AggregateRoot } from "../../shared/domain/aggregate-root";
 import { UserEmail } from "./value-objects/user-email";
 import { UserId } from "./value-objects/user-id";
@@ -38,7 +39,12 @@ export class User extends AggregateRoot {
     return user;
   }
 
-  toPrimitives() {
-    throw new Error("Method not implemented.");
+  toPrimitives(): UserDTO {
+    return {
+      id: this.id.value,
+      name: this.name.value,
+      surname: this.surname.value,
+      email: this.email.value,
+    };
   }
 }
