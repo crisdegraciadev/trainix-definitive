@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "jest --runInBand",
+    "test:watch": "jest --runInBand --watchAll",
     "test:unit": "jest ./tests/**/application/*.spec.ts",
-    "test:unit:watch": "jest ./tests/**/application/*.spec.ts --watch",
+    "test:unit:watch": "jest  --watchAll ./tests/**/application/*.spec.ts",
     "test:intg": "jest --runInBand ./tests/**/infrastructure/*.spec.ts",
-    "test:intg:watch": "jest --runInBand ./tests/**/infrastructure/*.spec.ts --watch"
+    "test:intg:watch": "jest --runInBand --watchAll ./tests/**/infrastructure/*.spec.ts "
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

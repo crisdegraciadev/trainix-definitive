@@ -24,7 +24,7 @@ export class PostgresUserRepository implements UserRepository {
       where: { id: userId },
     });
 
-    return new User({
+    return User.create({
       id: new Uuid(id),
       name: new UserName(name),
       surname: new UserSurname(surname),

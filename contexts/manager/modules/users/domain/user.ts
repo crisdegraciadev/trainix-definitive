@@ -21,7 +21,7 @@ export class User extends AggregateRoot {
   readonly email: UserEmail;
   readonly passwordHash: UserPasswordHash;
 
-  constructor(dto: UserAggregateDto) {
+  private constructor(dto: UserAggregateDto) {
     super();
 
     const { id, name, surname, email, passwordHash } = dto;
@@ -35,8 +35,19 @@ export class User extends AggregateRoot {
 
   static create(dto: UserAggregateDto): User {
     const user = new User(dto);
-
     return user;
+  }
+
+  static fromPrimitives(dto: UserDTO & { passwordHash: string }) {
+    const { id, name, surname, email, passwordHash } = dto;
+
+    return this.constructor({
+      id: new UserId(id),
+      name: new UserName(name),
+      surname: new UserSurname(surname),
+      email: new UserEmail(email),
+      passwordHash: new UserPasswordHash(passwordHash),
+    });
   }
 
   toPrimitives(): UserDTO {

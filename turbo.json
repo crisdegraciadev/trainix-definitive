@@ -26,6 +26,31 @@
       "cache": false,
       "persistent": true
     },
+    "test": {
+      "cache": false,
+      "dependsOn": ["^db:generate:test", "^db:push:test", "^db:seed:test"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^db:generate:test", "^db:push:test", "^db:seed:test"]
+    },
+    "test:unit": {
+      "cache": false
+    },
+    "test:unit:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:intg": {
+      "cache": false,
+      "dependsOn": ["^db:generate:test", "^db:push:test", "^db:seed:test"]
+    },
+    "test:intg:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^db:generate:test", "^db:push:test", "^db:seed:test"]
+    },
     "db:generate:dev": {
       "cache": false,
       "dependsOn": ["^db:generate:dev"]

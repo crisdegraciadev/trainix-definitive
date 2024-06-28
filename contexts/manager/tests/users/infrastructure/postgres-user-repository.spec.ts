@@ -9,7 +9,7 @@ import { UserPasswordHash } from "../../../modules/users/domain/value-objects/us
 
 describe("PostgresUserRepository", () => {
   beforeEach(async () => {
-    await db.user.deleteMany();
+    await db.user.deleteMany({});
   });
 
   it("should save an user", async () => {
@@ -29,7 +29,7 @@ describe("PostgresUserRepository", () => {
     expect(user).toEqual(expectedUser);
   });
 
-  it("should throw if email already has been used", async () => {
+  it("should throw if email or id already has been used", async () => {
     const expectedUser = User.create({
       id: UserId.random(),
       name: new UserName("Jhon"),
