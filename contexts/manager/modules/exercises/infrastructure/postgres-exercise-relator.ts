@@ -4,20 +4,26 @@ import { ExerciseRelator } from "../domain/dependencies/exercise-relator";
 
 export class PostgresExerciseRelator implements ExerciseRelator {
   async isRelatableWithUser(userId: Uuid): Promise<boolean> {
-    return !!(await db.user.findUnique({
+    const isFound = await db.user.findFirst({
       where: { id: userId.value },
-    }));
+    });
+
+    return !!isFound;
   }
 
   async isRelatableWithDifficulty(difficultyId: Uuid): Promise<boolean> {
-    return !!(await db.difficulty.findUnique({
+    const isFound = await db.difficulty.findFirst({
       where: { id: difficultyId.value },
-    }));
+    });
+
+    return !!isFound;
   }
 
   async isRelatableWithMuscle(muscleId: Uuid): Promise<boolean> {
-    return !!(await db.muscle.findUnique({
+    const isFound = await db.muscle.findFirst({
       where: { id: muscleId.value },
-    }));
+    });
+
+    return !!isFound;
   }
 }

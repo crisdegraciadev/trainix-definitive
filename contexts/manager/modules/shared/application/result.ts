@@ -27,7 +27,7 @@ export class Effect {
     return { isSuccess: true, value };
   }
 
-  static failure(error: Error): Failure {
+  static failure(error: unknown): Failure {
     return { isSuccess: false, error };
   }
 

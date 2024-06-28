@@ -24,7 +24,7 @@ describe("/users", () => {
       const { status, body } = await request.put(PATH).send(CREATE_USER_DTO);
 
       expect(status).toBe(201);
-      expect(isUserDTO(body.user)).toBeTruthy();
+      expect(isUserDTO(body.data)).toBeTruthy();
     });
 
     it("should return 422 UNPROCESSABLE CONTENT if the dto is invalid", async () => {

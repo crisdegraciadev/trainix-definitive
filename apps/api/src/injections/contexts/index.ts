@@ -1,4 +1,6 @@
 import { DIContainer } from "rsdi";
 import { userContextDI } from "./user";
+import { exerciseContextDI } from "./exercise";
 
-export const contextsDI = () => new DIContainer().extend(userContextDI);
+export type ContextsDI = ReturnType<typeof contextsDI>;
+export const contextsDI = () => new DIContainer().extend(userContextDI).extend(exerciseContextDI);

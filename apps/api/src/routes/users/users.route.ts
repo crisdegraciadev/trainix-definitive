@@ -6,8 +6,8 @@ import { z } from "zod";
 export const register = async (router: Router) => {
   const { UserPutController } = containerDI;
 
-  router.put("/users", isValidSchema, (req: Request, res: Response) => {
-    UserPutController.run(req, res);
+  router.put("/users", isValidSchema, async (req: Request, res: Response) => {
+    await UserPutController.run(req, res);
   });
 };
 

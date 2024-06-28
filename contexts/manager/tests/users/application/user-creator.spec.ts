@@ -1,8 +1,7 @@
+import { Failure } from "../../../modules/shared/application/result";
 import { InvalidArgumentError } from "../../../modules/shared/domain/errors/invalid-argument-error";
-import { Failure } from "../../../modules/shared/domain/result";
-import { UniqueConstraintError } from "../../../modules/shared/infrastructure/errors/unique-constraint-error";
 import { UserCreator } from "../../../modules/users";
-import { UserCreatorRequest } from "../../../modules/users/application/types/user-creator-request";
+import { UserCreatorRequest } from "../../../modules/users/application/user-creator";
 import { EmailConflictError } from "../../../modules/users/domain/errors/email-conflict-error";
 import { PasswordMissmatchError } from "../../../modules/users/domain/errors/password-missmatch-error";
 import { User } from "../../../modules/users/domain/user";
@@ -76,8 +75,6 @@ describe("UserCreator", () => {
   });
 
   it("should throw an error if name has numbers", async () => {
-    expect.assertions(1);
-
     const creator = new UserCreator(repository, passwordHasher);
 
     const dto: UserCreatorRequest = {
@@ -85,16 +82,13 @@ describe("UserCreator", () => {
       name: "Jh0n",
     };
 
-    try {
-      await creator.run(dto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(InvalidArgumentError);
-    }
+    const { isSuccess, error } = (await creator.run(dto)) as Failure;
+
+    expect(isSuccess).toBe(false);
+    expect(error).toBeInstanceOf(InvalidArgumentError);
   });
 
   it("should throw an error if surname has numbers", async () => {
-    expect.assertions(1);
-
     const creator = new UserCreator(repository, passwordHasher);
 
     const dto: UserCreatorRequest = {
@@ -102,16 +96,13 @@ describe("UserCreator", () => {
       surname: "D03",
     };
 
-    try {
-      await creator.run(dto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(InvalidArgumentError);
-    }
+    const { isSuccess, error } = (await creator.run(dto)) as Failure;
+
+    expect(isSuccess).toBe(false);
+    expect(error).toBeInstanceOf(InvalidArgumentError);
   });
 
   it("should throw an error if email is invalid", async () => {
-    expect.assertions(1);
-
     const creator = new UserCreator(repository, passwordHasher);
 
     const dto: UserCreatorRequest = {
@@ -119,11 +110,10 @@ describe("UserCreator", () => {
       email: "cris@com",
     };
 
-    try {
-      await creator.run(dto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(InvalidArgumentError);
-    }
+    const { isSuccess, error } = (await creator.run(dto)) as Failure;
+
+    expect(isSuccess).toBe(false);
+    expect(error).toBeInstanceOf(InvalidArgumentError);
   });
 
   it("should throw an error if a user with this email already exists", async () => {
@@ -131,16 +121,25 @@ describe("UserCreator", () => {
 
     await creator.run(validDto);
 
-    expect.assertions(1);
+    jest.spyOn(repository, "exists").mockResolvedValue(true);
 
-    try {
-      jest.spyOn(repository, "save").mockImplementationOnce(() => {
-        throw new UniqueConstraintError();
-      });
+    const { isSuccess, error } = (await creator.run(validDto)) as Failure;
 
-      await creator.run(validDto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(EmailConflictError);
-    }
+    const { password, confirmPassword, ...userData } = validDto;
+    const { id, name, surname, email } = userData;
+
+    const expectedUser = User.create({
+      ...userData,
+      id: new UserId(id),
+      name: new UserName(name),
+      surname: new UserSurname(surname),
+      email: new UserEmail(email),
+      passwordHash: new UserPasswordHash(`hashed_${validDto.password}`),
+    });
+
+    repository.assertExistsHaveBeenCalledWith(expectedUser);
+
+    expect(isSuccess).toBeFalsy();
+    expect(error).toBeInstanceOf(EmailConflictError);
   });
 });

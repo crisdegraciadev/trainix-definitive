@@ -6,8 +6,8 @@ import { z } from "zod";
 export const register = async (router: Router) => {
   const { ExercisePutController } = containerDI;
 
-  router.put("/exercises", isValidSchema, (req: Request, res: Response) => {
-    ExercisePutController.run(req, res);
+  router.put("/exercises", isValidSchema, async (req: Request, res: Response) => {
+    await ExercisePutController.run(req, res);
   });
 };
 

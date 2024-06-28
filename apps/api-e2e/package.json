@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:api:e2e": "jest",
-    "test:api:e2e:watch": "jest --watch"
+    "test:api:e2e": "jest --runInBand",
+    "test:api:e2e:watch": "jest --runInBand --watch"
   },
   "keywords": [],
   "author": "",

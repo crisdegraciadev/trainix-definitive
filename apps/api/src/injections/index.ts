@@ -1,7 +1,5 @@
 import { DIContainer } from "rsdi";
 import { controllersDI } from "./apps";
-import { userContextDI } from "./contexts/user";
+import { contextsDI } from "./contexts";
 
-export const containerDI = new DIContainer()
-  .extend(userContextDI)
-  .extend(controllersDI);
+export const containerDI = new DIContainer().extend(contextsDI).extend(controllersDI);

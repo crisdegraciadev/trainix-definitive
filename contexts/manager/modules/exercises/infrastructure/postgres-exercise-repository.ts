@@ -4,10 +4,25 @@ import { Exercise } from "../domain/exercise";
 
 export class PostgresExerciseRepository implements ExerciseRepository {
   async save(exercise: Exercise): Promise<void> {
-    db.exercise.create({
+    const { muscleIds, ...data } = exercise.toPrimitives();
+
+    await db.exercise.create({
       data: {
-        ...exercise.toPrimitives(),
+        ...data,
+        muscles: {
+          connect: muscleIds.map((id) => ({ id })),
+        },
       },
     });
+  }
+
+  async exists({ id, name }: Exercise): Promise<boolean> {
+    const isFound = await db.exercise.findFirst({
+      where: {
+        OR: [{ id: id.value }, { name: name.value }],
+      },
+    });
+
+    return !!isFound;
   }
 }

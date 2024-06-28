@@ -1,11 +1,11 @@
 import { ExercisePutController } from "@controllers/exercises/exercise-put-controller";
 import { StatusGetController } from "@controllers/status/status-get-controller";
 import { UserPutController } from "@controllers/users/user-put-controller";
-import { UserContextDI } from "@injections/contexts/user";
+import { ContextsDI } from "@injections/contexts";
 
 export type ControllersDI = ReturnType<typeof controllersDI>;
 
-export const controllersDI = (container: UserContextDI) => {
+export const controllersDI = (container: ContextsDI) => {
   const { UserCreator } = container;
 
   return container
@@ -15,7 +15,7 @@ export const controllersDI = (container: UserContextDI) => {
     .add("UserPutController", () => {
       return new UserPutController(UserCreator);
     })
-    .add("ExercisePutController", () => {
-      return new ExercisePutController();
+    .add("ExercisePutController", ({ ExerciseCreator }) => {
+      return new ExercisePutController(ExerciseCreator);
     });
 };

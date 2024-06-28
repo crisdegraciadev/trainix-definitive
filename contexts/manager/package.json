@@ -8,8 +8,8 @@
     "test:watch": "jest --watch",
     "test:unit": "jest ./tests/**/application/*.spec.ts",
     "test:unit:watch": "jest ./tests/**/application/*.spec.ts --watch",
-    "test:intg": "jest ./tests/**/infrastructure/*.spec.ts",
-    "test:intg:watch": "jest ./tests/**/infrastructure/*.spec.ts --watch"
+    "test:intg": "jest --runInBand ./tests/**/infrastructure/*.spec.ts",
+    "test:intg:watch": "jest --runInBand ./tests/**/infrastructure/*.spec.ts --watch"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

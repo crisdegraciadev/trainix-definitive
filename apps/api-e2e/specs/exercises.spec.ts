@@ -20,7 +20,7 @@ describe("/exercises", () => {
   });
 
   describe("PUT /", () => {
-    it("should return 201 CREATER and return the created exercise", async () => {
+    it("should return 201 CREATED and return the created exercise", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });
@@ -32,6 +32,8 @@ describe("/exercises", () => {
         data: USER_DTO,
       });
 
+      db.user.findUniqueOrThrow({ where: { id: user.id } });
+
       const { status, body } = await request.put(PATH).send({
         id: Uuid.random().value,
         name: "Push Up",
@@ -42,74 +44,61 @@ describe("/exercises", () => {
 
       expect(status).toBe(201);
 
-      expect(isExerciseDTO(body)).toBeTruthy();
+      const { data } = body;
+      expect(isExerciseDTO(data)).toBeTruthy();
 
-      expect(body.name).toBe("Push Up");
-      expect(body.userId).toBe(user.id);
-      expect(body.difficultyId).toBe(difficulty.id);
-      expect(body.muscleIds).toBe(muscleIds);
+      expect(data.name).toBe("Push Up");
+      expect(data.userId).toBe(user.id);
+      expect(data.difficultyId).toBe(difficulty.id);
+      expect(data.muscleIds).toEqual(muscleIds);
     });
 
     it("should return 422 UNPROCESSABLE ENTITY if the dto is invalid", async () => {
-      const { status: status1 } = await request.put(PATH).send({});
-      expect(status1).toBe(422);
+      const { status, body } = await request.put(PATH).send({});
+
+      expect(status).toBe(422);
+      expect(body.issues).toBeTruthy();
     });
 
-    it.skip("should return 400 BAD REQUEST if no body is provided", async () => {
-      const { status, body, text } = await request.post(PATH);
-
-      expect(status).toBe(400);
-      expect(text).toBe("body not provided");
-      expect(body).toMatchObject({});
-    });
-
-    it.skip("should return 400 BAD REQUEST if the body is malformed", async () => {
-      const { status, body, text } = await request
-        .post(PATH)
-        .send({ name: "Push Up" });
-
-      expect(status).toBe(400);
-      expect(text).toBe("malformed body");
-      expect(body).toMatchObject({});
-    });
-
-    it.skip("should return 404 NOT FOUND if related entities are not found", async () => {
-      const { status, body, text } = await request.post(PATH).send({
+    it("should return 404 NOT FOUND if related entities are not found", async () => {
+      const { status } = await request.put(PATH).send({
+        id: Uuid.random().value,
         name: "Push Up",
-        userId: "263609d5-f4a6-4296-aab2-7953128035c5",
-        difficultyId: "263609d5-f4a6-4296-aab2-7953128035c5",
+        userId: Uuid.random().value,
+        difficultyId: Uuid.random().value,
+        muscleIds: [Uuid.random().value],
       });
 
       expect(status).toBe(404);
-      expect(text).toBe("entities to relate not found");
-      expect(body).toMatchObject({});
     });
 
-    it.skip("should return 409 CONFLICT if the exercise is already created", async () => {
+    it("should return 409 CONFLICT if the exercise is already created", async () => {
       const difficulty = await db.difficulty.findUniqueOrThrow({
         where: { value: "easy" },
       });
+
+      const muslces = await db.muscle.findMany({ take: 3 });
+      const muscleIds = muslces.map(({ id }) => id);
 
       const user = await db.user.create({
         data: USER_DTO,
       });
 
-      const { status: status1 } = await request.post(PATH).send({
+      const exerciseDto = {
+        id: Uuid.random().value,
         name: "Push Up",
         userId: user.id,
         difficultyId: difficulty.id,
-      });
+        muscleIds,
+      };
 
-      expect(status1).toBe(200);
+      const { status: status1 } = await request.put(PATH).send(exerciseDto);
 
-      const { status: status2, text: text2 } = await request.post(PATH).send({
-        name: "Push Up",
-        userId: user.id,
-        difficultyId: difficulty.id,
-      });
+      expect(status1).toBe(201);
+
+      const { status: status2 } = await request.put(PATH).send(exerciseDto);
 
       expect(status2).toBe(409);
-      expect(text2).toBe("exercise with that name is already created");
     });
   });
 
@@ -194,13 +183,11 @@ describe("/exercises", () => {
         },
       });
 
-      const { status, text, body } = await request
-        .put(`${PATH}/${exercise.id}`)
-        .send({
-          name: "Pull Up",
-          userId: "263609d5-f4a6-4296-aab2-7953128035c5",
-          difficultyId: "263609d5-f4a6-4296-aab2-7953128035c5",
-        });
+      const { status, text, body } = await request.put(`${PATH}/${exercise.id}`).send({
+        name: "Pull Up",
+        userId: "263609d5-f4a6-4296-aab2-7953128035c5",
+        difficultyId: "263609d5-f4a6-4296-aab2-7953128035c5",
+      });
 
       expect(status).toBe(404);
       expect(text).toBe("entities to relate not found");
@@ -224,13 +211,11 @@ describe("/exercises", () => {
         },
       });
 
-      const { status, body, text } = await request
-        .put(`${PATH}/${exercise.id}`)
-        .send({
-          name: "Push Up",
-          userId: user.id,
-          difficultyId: difficulty.id,
-        });
+      const { status, body, text } = await request.put(`${PATH}/${exercise.id}`).send({
+        name: "Push Up",
+        userId: user.id,
+        difficultyId: difficulty.id,
+      });
 
       expect(status).toBe(409);
       expect(text).toBe("exercise with that name already exists");

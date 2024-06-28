@@ -3,4 +3,6 @@ import { Exercise } from "../exercise";
 
 export interface ExerciseRepository extends Repository<Exercise> {
   save(exercise: Exercise): Promise<void>;
+
+  exists(exercise: Exercise): Promise<boolean>;
 }
