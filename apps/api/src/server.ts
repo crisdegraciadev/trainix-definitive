@@ -6,6 +6,7 @@ import errorHandler from "errorhandler";
 import helmet from "helmet";
 import httpStatus from "http-status";
 import { registerRoutes } from "./routes";
+import cors from "cors";
 
 export class Server {
   private express: Express;
@@ -27,6 +28,7 @@ export class Server {
     this.express.use(helmet.noSniff());
     this.express.use(helmet.hidePoweredBy());
     this.express.use(helmet.frameguard({ action: "deny" }));
+    this.express.use(cors());
   }
 
   private setupRouter() {

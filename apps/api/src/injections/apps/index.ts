@@ -1,3 +1,5 @@
+import { GoogleSignInCallbackGetController } from "@controllers/auth/google-sign-in-callback-get-controller";
+import { GoogleSignInGetController } from "@controllers/auth/google-sign-in-get-controller";
 import { ExercisePutController } from "@controllers/exercises/exercise-put-controller";
 import { StatusGetController } from "@controllers/status/status-get-controller";
 import { UserPutController } from "@controllers/users/user-put-controller";
@@ -17,5 +19,11 @@ export const controllersDI = (container: ContextsDI) => {
     })
     .add("ExercisePutController", ({ ExerciseCreator }) => {
       return new ExercisePutController(ExerciseCreator);
+    })
+    .add("GoogleSignInGetController", () => {
+      return new GoogleSignInGetController();
+    })
+    .add("GoogleSignInCallbackGetController", () => {
+      return new GoogleSignInCallbackGetController();
     });
 };

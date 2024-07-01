@@ -3,7 +3,7 @@ import { Server } from "./server";
 
 export class TrainixApi {
   server?: Server;
-  diContainer: IDIContainer;
+  diContainer!: IDIContainer;
 
   async start() {
     const port = process.env.PORT || "5000";
